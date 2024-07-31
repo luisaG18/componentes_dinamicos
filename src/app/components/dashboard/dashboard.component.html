@@ -1,0 +1,10 @@
+<!-- Contenedor principal -->
+<main>
+  <!-- Sección con la lista de opciones de widgets -->
+  <section *ngFor="let option of arrayWidgetsOptions; index as i">
+    <!-- Elemento input tipo checkbox -->
+    <input type="checkbox" id="{{ option[i] }}" />
+    <!-- Label para el elemento input -->
+    <label for="{{ option[i] }}">{{ option }}</label>
+  </section>
+</main>
