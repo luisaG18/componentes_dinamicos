@@ -11,11 +11,4 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 })
 export class AppComponent {
   title = 'ejercicio_componentes_dinamicos';
-  arrayWidgetsOptions: string[] = [
-    'Total de ventas',
-    'Usuarios activos',
-    'Ventas de hoy',
-    'Recursos utilizados',
-    'Promedio de ventas por dia',
-  ];
 }
