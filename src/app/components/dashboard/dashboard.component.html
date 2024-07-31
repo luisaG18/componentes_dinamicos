@@ -1,17 +1,20 @@
 <!-- Contenedor principal -->
 <main>
-  <!-- Sección con la lista de opciones de widgets -->
-  <section *ngFor="let option of getKeys(); index as i">
-    <!-- Elemento input tipo checkbox -->
-    <input
-      #checkbox
-      [(ngModel)]="objectOptionsWidgets[option]"
-      type="checkbox"
-      id="{{ option[i] }}"
-      (ngModelChange)="onChangeCheckbox($event, option)"
-    />
-    <!-- Label para el elemento input -->
-    <label for="{{ option[i] }}">{{ option }}</label>
+  <!-- Sección de opciones de widgets -->
+  <section>
+    <!-- Contenedor para el checkbox y el inpu -->
+    <div *ngFor="let option of getKeys(); index as i">
+      <!-- Elemento input tipo checkbox -->
+      <input
+        #checkbox
+        [(ngModel)]="objectOptionsWidgets[option]"
+        type="checkbox"
+        id="{{ option[i] }}"
+        (ngModelChange)="onChangeCheckbox($event, option)"
+      />
+      <!-- Label para el elemento input -->
+      <label for="{{ option[i] }}">{{ option }}</label>
+    </div>
   </section>
   <!-- Sección para los widgets seleccionados -->
   <section class="section-widgets" #sectionWidgets></section>

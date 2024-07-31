@@ -55,6 +55,7 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     // Obtenemos los datos que hayan en el localstorage
     this.getLocalStorage();
   }
+
   /**
    * Función que se ejecuta despues de cargar las vistas del elemento
    */
@@ -64,7 +65,7 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   }
 
   /**
-   * Funci´´on para agregar los widgets que esten en el localStorage
+   * Función para agregar los widgets que esten en el localStorage
    */
   addDefaultWidgets() {
     // Le asignamos a la variable keys, el arreglo con las keys del objeto
