@@ -4,8 +4,8 @@ import { TotalSalesComponent } from '../total-sales/total-sales.component';
 import { ActiveUsersComponent } from '../active-users/active-users.component';
 import { SalesTodayComponent } from '../sales-today/sales-today.component';
 import { ResourcesUsedComponent } from '../resources-used/resources-used.component';
-import { AverageDailySalesComponent } from '../average-daily-sales/average-daily-sales.component';
 import { FormsModule } from '@angular/forms';
+import { AverageDailySalesComponent } from '../average-daily-sales/average-daily-sales.component';
 
 @Component({
   selector: 'app-dashboard',
