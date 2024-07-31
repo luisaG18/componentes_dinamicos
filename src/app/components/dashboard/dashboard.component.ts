@@ -17,21 +17,37 @@ import { FormsModule } from '@angular/forms';
 export class DashboardComponent implements AfterViewInit, OnInit {
   // Elemento sectionWidgets
   @ViewChild('sectionWidgets') sectionWidgets!: ElementRef;
-  // Objeto con las opciones de widgets, para controlar cuando se verán
-  objectOptionsWidgets: any = {
-    'Total de ventas': false,
-    'Usuarios activos': false,
-    'Ventas de hoy': false,
-    'Recursos utilizados': false,
-    'Promedio de ventas por dia': false,
+  // Objeto con las opciones de widgets
+  // para controlar cuando se verán y en que posición
+  objectOptionsWidget: any = {
+    'Total de ventas': {
+      isChecked: false,
+      order: 0,
+    },
+    'Usuarios activos': {
+      isChecked: false,
+      order: 0,
+    },
+    'Ventas de hoy': {
+      isChecked: false,
+      order: 0,
+    },
+    'Recursos utilizados': {
+      isChecked: false,
+      order: 0,
+    },
+    'Promedio de ventas por dia': {
+      isChecked: false,
+      order: 0,
+    },
   };
 
   /**
-   * Función para obtener las llaves del objeto objectOptionsWidgets
+   * Función para obtener las llaves del objeto objectOptionsWidget
    * @returns Retorna el arreglo con las keys del objeto
    */
   getKeys() {
-    return Object.keys(this.objectOptionsWidgets);
+    return Object.keys(this.objectOptionsWidget);
   }
 
   /**
@@ -42,11 +58,11 @@ export class DashboardComponent implements AfterViewInit, OnInit {
 
   // Creamos las variables para la ref de los contenedores que
   // guardaran los componentes
-  totalSalesComponent!: ComponentRef<TotalSalesComponent>;
-  activeUsersComponent!: ComponentRef<ActiveUsersComponent>;
-  salesTodayComponent!: ComponentRef<SalesTodayComponent>;
-  resourcesUsedComponent!: ComponentRef<ResourcesUsedComponent>;
-  averageDailySalesComponent!: ComponentRef<AverageDailySalesComponent>;
+  containerTotalSalesComponent!: ComponentRef<TotalSalesComponent>;
+  containerActiveUsersComponent!: ComponentRef<ActiveUsersComponent>;
+  containerSalesTodayComponent!: ComponentRef<SalesTodayComponent>;
+  containerResourcesUsedComponent!: ComponentRef<ResourcesUsedComponent>;
+  containerAverageDailySalesComponent!: ComponentRef<AverageDailySalesComponent>;
 
   /**
    * Función que se ejecuta al inicializarse el componente
@@ -61,31 +77,41 @@ export class DashboardComponent implements AfterViewInit, OnInit {
    */
   ngAfterViewInit(): void {
     // Agregamos los widgets que esten en el localStorage
-    this.addDefaultWidgets();
+    this.addActiveWidgets();
   }
 
   /**
    * Función para agregar los widgets que esten en el localStorage
    */
-  addDefaultWidgets() {
-    // Le asignamos a la variable keys, el arreglo con las keys del objeto
-    const arrayKeys = this.getKeys();
-    // Recorremos el arreglo de arrayKeys
-    for (let key of arrayKeys) {
-      // Validamos si el widget está en true para agregarlo
-      if (this.objectOptionsWidgets[key] === true) {
-        // Llamamos la función que agrega los widgets
-        //? Acá podria llamar directamente al addWidget?
-        this.onChangeCheckbox(true, key);
+  addActiveWidgets() {
+    // Variable para almacenar el objeto con la estructura de el order como key
+    const newObject: any = {};
+    // Recorremos las keys del objeto OptionWidget
+    Object.keys(this.objectOptionsWidget).forEach((key) => {
+      // Validamos si la option esta checked
+      if (this.objectOptionsWidget[key].isChecked) {
+        // Creamos el objeto con el order como key
+        newObject[this.objectOptionsWidget[key].order] = {
+          name: key,
+          isChecked: true,
+          order: this.objectOptionsWidget[key].order,
+        };
       }
-    }
+    });
+    // Creamos una variable para almacenar las keys del nuevo objeto ordenadas
+    const arraySortedOptions = Object.keys(newObject).sort((a: string, b: string) => Number(a) - Number(b));
+    // Recorremos el array de las opciones ordenadas
+    arraySortedOptions.forEach((order) => {
+      // Llamamos la función que agrega el widget y le mandamos la opción
+      this.addWidget(newObject[order].name);
+    });
   }
 
   /**
    * Función para agregar los widgets al localStorage
    */
   setLocalStorage() {
-    localStorage.setItem('optionsWidgets', JSON.stringify(this.objectOptionsWidgets));
+    localStorage.setItem('optionsWidgets', JSON.stringify(this.objectOptionsWidget));
   }
 
   /**
@@ -95,23 +121,29 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     const data = localStorage.getItem('optionsWidgets');
     // Validamos si hay algún dato
     if (data) {
-      // Le pasamos los datos al objeto optionWidgets
-      this.objectOptionsWidgets = JSON.parse(data);
+      // Le pasamos los datos al objeto optionWidget
+      this.objectOptionsWidget = JSON.parse(data);
     }
   }
+
   /**
    * Función que se ejecuta al hacer click en el checkbox
    * @param option Variable de la opción seleccionada
    * @returns
    */
   onChangeCheckbox(event: boolean, option: string) {
-    this.setLocalStorage();
-    const isChecked = event;
+    // Le asignamos a la variable isChecked el valor que se recibe del evento
+    const isChecked: boolean = event;
+    // Validamos si el check esta checked
     if (isChecked) {
+      // Llamamos la función que agrega el widget
       this.addWidget(option);
     } else {
+      // Llamamos la función que remueve el widget
       this.removeWidget(option);
     }
+    // Llamamos la función que nos guarda el objeto en el localStorage
+    this.setLocalStorage();
   }
 
   /**
@@ -120,26 +152,59 @@ export class DashboardComponent implements AfterViewInit, OnInit {
    * @returns
    */
   addWidget(option: string) {
+    // Asignamos la cantidad de hijos que tiene el componente padre
+    const amount = this.sectionWidgets.nativeElement.childNodes.length;
+    // Le asignamos esa cantidad a la propiedad order del objeto optionWidget
+    this.objectOptionsWidget[option].order = amount;
+    // Hacemos el switch para agregar el widget
     switch (option) {
+      // Caso cuando la opción es Total de ventas
       case 'Total de ventas':
-        this.totalSalesComponent = this.vcr.createComponent(TotalSalesComponent);
-        this.renderer.appendChild(this.sectionWidgets.nativeElement, this.totalSalesComponent.location.nativeElement);
+        // Le asignamos al container del componente el componente que se crea
+        this.containerTotalSalesComponent = this.vcr.createComponent(TotalSalesComponent);
+        // Le agregamos al componente padre el neuvo componente creado
+        this.appendChild(this.containerTotalSalesComponent);
+        // Detectamos los cambios que hay en el componente
+        this.detectChangeComponent(this.containerTotalSalesComponent);
+        /* this.containerTotalSalesComponent.location.nativeElement.addEventListener('click', () => {
+          console.log('click');
+        }); */
         break;
+      // Caso cuando la opción es Usuarios activos
       case 'Usuarios activos':
-        this.activeUsersComponent = this.vcr.createComponent(ActiveUsersComponent);
-        this.renderer.appendChild(this.sectionWidgets.nativeElement, this.activeUsersComponent.location.nativeElement);
+        // Le asignamos al container del componente el componente que se crea
+        this.containerActiveUsersComponent = this.vcr.createComponent(ActiveUsersComponent);
+        // Le agregamos al componente padre el neuvo componente creado
+        this.appendChild(this.containerActiveUsersComponent);
+        // Detectamos los cambios que hay en el componente
+        this.detectChangeComponent(this.containerActiveUsersComponent);
         break;
+      // Caso cuando la opción es Ventas de hoy
       case 'Ventas de hoy':
-        this.salesTodayComponent = this.vcr.createComponent(SalesTodayComponent);
-        this.renderer.appendChild(this.sectionWidgets.nativeElement, this.salesTodayComponent.location.nativeElement);
+        // Le asignamos al container del componente el componente que se crea
+        this.containerSalesTodayComponent = this.vcr.createComponent(SalesTodayComponent);
+        // Le agregamos al componente padre el nuevo componente creado
+        this.appendChild(this.containerSalesTodayComponent);
+        // Detectamos los cambios que hay en el componente
+        this.detectChangeComponent(this.containerSalesTodayComponent);
         break;
+      // Caso cuando la opción es Recursos utilizados
       case 'Recursos utilizados':
-        this.resourcesUsedComponent = this.vcr.createComponent(ResourcesUsedComponent);
-        this.renderer.appendChild(this.sectionWidgets.nativeElement, this.resourcesUsedComponent.location.nativeElement);
+        // Le asignamos al container del componente el componente que se crea
+        this.containerResourcesUsedComponent = this.vcr.createComponent(ResourcesUsedComponent);
+        // Le agregamos al componente padre el nuevo componente creado
+        this.appendChild(this.containerResourcesUsedComponent);
+        // Detectamos los cambios que hay en el componente
+        this.detectChangeComponent(this.containerResourcesUsedComponent);
         break;
+      // Caso cuando la opción es Promedio de ventas por dia
       case 'Promedio de ventas por dia':
-        this.averageDailySalesComponent = this.vcr.createComponent(AverageDailySalesComponent);
-        this.renderer.appendChild(this.sectionWidgets.nativeElement, this.averageDailySalesComponent.location.nativeElement);
+        // Le asignamos al container del componente el componente que se crea
+        this.containerAverageDailySalesComponent = this.vcr.createComponent(AverageDailySalesComponent);
+        // Le agregamos al componente padre el nuevo componente creado
+        this.appendChild(this.containerAverageDailySalesComponent);
+        // Detectamos los cambios que hay en el componente
+        this.detectChangeComponent(this.containerAverageDailySalesComponent);
         break;
       default:
         return;
@@ -150,24 +215,51 @@ export class DashboardComponent implements AfterViewInit, OnInit {
    * Función para eliminar los widgets
    */
   removeWidget(option: string) {
+    // Hacemos el switch para agregar el widget
     switch (option) {
+      // Caso cuando la opción es Total de ventas
       case 'Total de ventas':
-        this.totalSalesComponent.destroy();
+        // Eliminamos el container que contiene el componente
+        this.containerTotalSalesComponent.destroy();
         break;
+      // Caso cuando la opción es Usuarios activos
       case 'Usuarios activos':
-        this.activeUsersComponent.destroy();
+        // Eliminamos el container que contiene el componente
+        this.containerActiveUsersComponent.destroy();
         break;
+      // Caso cuando la opción es Ventas de hoy
       case 'Ventas de hoy':
-        this.salesTodayComponent.destroy();
+        // Eliminamos el container que contiene el componente
+        this.containerSalesTodayComponent.destroy();
         break;
+      // Caso cuando la opción es Recursos utilizados
       case 'Recursos utilizados':
-        this.resourcesUsedComponent.destroy();
+        // Eliminamos el container que contiene el componente
+        this.containerResourcesUsedComponent.destroy();
         break;
+      // Caso cuando la opción es Promedio de ventas por dia
       case 'Promedio de ventas por dia':
-        this.averageDailySalesComponent.destroy();
+        // Eliminamos el container que contiene el componente
+        this.containerAverageDailySalesComponent.destroy();
         break;
       default:
         return;
     }
+  }
+
+  /**
+   * Función para aagregar un hijo a un el elemento sectionWidgets
+   * @param containerComponent Variable del contenedor que tiene el componente
+   */
+  appendChild(containerComponent: any) {
+    this.renderer.appendChild(this.sectionWidgets.nativeElement, containerComponent.location.nativeElement);
+  }
+
+  /**
+   * Función para detectar un cambio en el componente
+   * @param containerComponent Variable del contenedor que tiene el componente
+   */
+  detectChangeComponent(containerComponent: any) {
+    containerComponent.changeDetectorRef.detectChanges();
   }
 }

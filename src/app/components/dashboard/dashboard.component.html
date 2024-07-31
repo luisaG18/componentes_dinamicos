@@ -7,7 +7,7 @@
       <!-- Elemento input tipo checkbox -->
       <input
         #checkbox
-        [(ngModel)]="objectOptionsWidgets[option]"
+        [(ngModel)]="objectOptionsWidget[option].isChecked"
         type="checkbox"
         id="{{ option[i] }}"
         (ngModelChange)="onChangeCheckbox($event, option)"
