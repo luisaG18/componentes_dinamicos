@@ -108,25 +108,6 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   }
 
   /**
-   * Función para agregar los widgets al localStorage
-   */
-  setLocalStorage() {
-    localStorage.setItem('optionsWidgets', JSON.stringify(this.objectOptionsWidget));
-  }
-
-  /**
-   * Función para obtener los widgets que estén en el localstorage
-   */
-  getLocalStorage() {
-    const data = localStorage.getItem('optionsWidgets');
-    // Validamos si hay algún dato
-    if (data) {
-      // Le pasamos los datos al objeto optionWidget
-      this.objectOptionsWidget = JSON.parse(data);
-    }
-  }
-
-  /**
    * Función que se ejecuta al hacer click en el checkbox
    * @param option Variable de la opción seleccionada
    * @returns
@@ -144,6 +125,25 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     }
     // Llamamos la función que nos guarda el objeto en el localStorage
     this.setLocalStorage();
+  }
+
+  /**
+   * Función para agregar los widgets al localStorage
+   */
+  setLocalStorage() {
+    localStorage.setItem('optionsWidgets', JSON.stringify(this.objectOptionsWidget));
+  }
+
+  /**
+   * Función para obtener los widgets que estén en el localstorage
+   */
+  getLocalStorage() {
+    const data = localStorage.getItem('optionsWidgets');
+    // Validamos si hay algún dato
+    if (data) {
+      // Le pasamos los datos al objeto optionWidget
+      this.objectOptionsWidget = JSON.parse(data);
+    }
   }
 
   /**
