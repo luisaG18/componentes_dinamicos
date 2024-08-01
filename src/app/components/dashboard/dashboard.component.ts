@@ -84,7 +84,7 @@ export class DashboardComponent implements AfterViewInit, OnInit {
    * Función para agregar los widgets que esten en el localStorage
    */
   addActiveWidgets() {
-    // Variable para almacenar el objeto con la estructura de el order como key
+    // Variable para ordenar la lista de componentes
     const newObject: any = {};
     // Recorremos las keys del objeto OptionWidget
     Object.keys(this.objectOptionsWidget).forEach((key) => {
@@ -164,8 +164,6 @@ export class DashboardComponent implements AfterViewInit, OnInit {
         this.containerTotalSalesComponent = this.vcr.createComponent(TotalSalesComponent);
         // Le agregamos al componente padre el neuvo componente creado
         this.appendChild(this.containerTotalSalesComponent);
-        // Detectamos los cambios que hay en el componente
-        this.detectChangeComponent(this.containerTotalSalesComponent);
         /* this.containerTotalSalesComponent.location.nativeElement.addEventListener('click', () => {
           console.log('click');
         }); */
@@ -176,8 +174,6 @@ export class DashboardComponent implements AfterViewInit, OnInit {
         this.containerActiveUsersComponent = this.vcr.createComponent(ActiveUsersComponent);
         // Le agregamos al componente padre el neuvo componente creado
         this.appendChild(this.containerActiveUsersComponent);
-        // Detectamos los cambios que hay en el componente
-        this.detectChangeComponent(this.containerActiveUsersComponent);
         break;
       // Caso cuando la opción es Ventas de hoy
       case 'Ventas de hoy':
@@ -185,8 +181,6 @@ export class DashboardComponent implements AfterViewInit, OnInit {
         this.containerSalesTodayComponent = this.vcr.createComponent(SalesTodayComponent);
         // Le agregamos al componente padre el nuevo componente creado
         this.appendChild(this.containerSalesTodayComponent);
-        // Detectamos los cambios que hay en el componente
-        this.detectChangeComponent(this.containerSalesTodayComponent);
         break;
       // Caso cuando la opción es Recursos utilizados
       case 'Recursos utilizados':
@@ -194,8 +188,6 @@ export class DashboardComponent implements AfterViewInit, OnInit {
         this.containerResourcesUsedComponent = this.vcr.createComponent(ResourcesUsedComponent);
         // Le agregamos al componente padre el nuevo componente creado
         this.appendChild(this.containerResourcesUsedComponent);
-        // Detectamos los cambios que hay en el componente
-        this.detectChangeComponent(this.containerResourcesUsedComponent);
         break;
       // Caso cuando la opción es Promedio de ventas por dia
       case 'Promedio de ventas por dia':
@@ -203,8 +195,6 @@ export class DashboardComponent implements AfterViewInit, OnInit {
         this.containerAverageDailySalesComponent = this.vcr.createComponent(AverageDailySalesComponent);
         // Le agregamos al componente padre el nuevo componente creado
         this.appendChild(this.containerAverageDailySalesComponent);
-        // Detectamos los cambios que hay en el componente
-        this.detectChangeComponent(this.containerAverageDailySalesComponent);
         break;
       default:
         return;
@@ -253,13 +243,6 @@ export class DashboardComponent implements AfterViewInit, OnInit {
    */
   appendChild(containerComponent: any) {
     this.renderer.appendChild(this.sectionWidgets.nativeElement, containerComponent.location.nativeElement);
-  }
-
-  /**
-   * Función para detectar un cambio en el componente
-   * @param containerComponent Variable del contenedor que tiene el componente
-   */
-  detectChangeComponent(containerComponent: any) {
     containerComponent.changeDetectorRef.detectChanges();
   }
 }
